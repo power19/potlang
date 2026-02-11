@@ -11,6 +11,7 @@ const RECIPES = [
     name: 'Greek Yogurt Power Bowl',
     emoji: '\u{1F963}',
     meal: 'breakfast',
+    proteinType: 'vegetarian',
     calories: 320,
     protein: 24,
     carbs: 38,
@@ -36,6 +37,7 @@ const RECIPES = [
     name: 'Veggie Egg Scramble',
     emoji: '\u{1F373}',
     meal: 'breakfast',
+    proteinType: 'eggs',
     calories: 280,
     protein: 20,
     carbs: 12,
@@ -63,6 +65,7 @@ const RECIPES = [
     name: 'Overnight Oats',
     emoji: '\u{1F95B}',
     meal: 'breakfast',
+    proteinType: 'vegetarian',
     calories: 340,
     protein: 14,
     carbs: 52,
@@ -90,6 +93,7 @@ const RECIPES = [
     name: 'Grilled Chicken Salad',
     emoji: '\u{1F957}',
     meal: 'lunch',
+    proteinType: 'chicken',
     calories: 380,
     protein: 36,
     carbs: 18,
@@ -118,6 +122,7 @@ const RECIPES = [
     name: 'Turkey & Veggie Wrap',
     emoji: '\u{1F32F}',
     meal: 'lunch',
+    proteinType: 'turkey',
     calories: 350,
     protein: 28,
     carbs: 34,
@@ -146,6 +151,7 @@ const RECIPES = [
     name: 'Quinoa Buddha Bowl',
     emoji: '\u{1F35B}',
     meal: 'lunch',
+    proteinType: 'vegetarian',
     calories: 420,
     protein: 18,
     carbs: 52,
@@ -175,6 +181,7 @@ const RECIPES = [
     name: 'Roasted Chicken & Vegetables',
     emoji: '\u{1F357}',
     meal: 'dinner',
+    proteinType: 'chicken',
     calories: 410,
     protein: 38,
     carbs: 20,
@@ -205,6 +212,7 @@ const RECIPES = [
     name: 'Chicken Stir-Fry',
     emoji: '\u{1F372}',
     meal: 'dinner',
+    proteinType: 'chicken',
     calories: 380,
     protein: 32,
     carbs: 30,
@@ -235,6 +243,7 @@ const RECIPES = [
     name: 'Lean Beef Tacos',
     emoji: '\u{1F32E}',
     meal: 'dinner',
+    proteinType: 'beef',
     calories: 420,
     protein: 30,
     carbs: 36,
@@ -266,6 +275,7 @@ const RECIPES = [
     name: 'Lentil & Vegetable Soup',
     emoji: '\u{1F35C}',
     meal: 'dinner',
+    proteinType: 'vegetarian',
     calories: 310,
     protein: 20,
     carbs: 45,
@@ -297,6 +307,7 @@ const RECIPES = [
     name: 'Apple & Almond Butter',
     emoji: '\u{1F34E}',
     meal: 'snack',
+    proteinType: 'vegetarian',
     calories: 190,
     protein: 5,
     carbs: 26,
@@ -317,6 +328,7 @@ const RECIPES = [
     name: 'Hummus & Veggie Sticks',
     emoji: '\u{1F955}',
     meal: 'snack',
+    proteinType: 'vegetarian',
     calories: 160,
     protein: 6,
     carbs: 20,
@@ -340,6 +352,7 @@ const RECIPES = [
     name: 'Protein Energy Balls',
     emoji: '\u{1F36A}',
     meal: 'snack',
+    proteinType: 'vegetarian',
     calories: 140,
     protein: 8,
     carbs: 16,
@@ -366,6 +379,7 @@ const RECIPES = [
     name: 'Mediterranean Chicken Bowl',
     emoji: '\u{1F96A}',
     meal: 'lunch',
+    proteinType: 'chicken',
     calories: 440,
     protein: 35,
     carbs: 40,
@@ -395,6 +409,7 @@ const RECIPES = [
     name: 'Turkey Stuffed Peppers',
     emoji: '\u{1FAD1}',
     meal: 'dinner',
+    proteinType: 'turkey',
     calories: 300,
     protein: 28,
     carbs: 22,
@@ -425,6 +440,7 @@ const RECIPES = [
     name: 'Berry Smoothie',
     emoji: '\u{1F964}',
     meal: 'breakfast',
+    proteinType: 'vegetarian',
     calories: 260,
     protein: 20,
     carbs: 36,
@@ -443,6 +459,66 @@ const RECIPES = [
       'Add berries, banana, and ice.',
       'Blend until smooth and creamy.',
       'Pour into a glass and enjoy immediately.'
+    ]
+  },
+  {
+    id: 17,
+    name: 'Baked Salmon & Asparagus',
+    emoji: '\u{1F41F}',
+    meal: 'dinner',
+    proteinType: 'fish',
+    calories: 400,
+    protein: 38,
+    carbs: 14,
+    fat: 22,
+    prepTime: '25 min',
+    description: 'Herb-crusted salmon fillet baked alongside tender asparagus spears.',
+    ingredients: [
+      '150g salmon fillet',
+      '1 bunch asparagus, trimmed',
+      '1 tbsp olive oil',
+      '2 cloves garlic, minced',
+      '1 lemon',
+      'Fresh dill',
+      'Salt and pepper'
+    ],
+    instructions: [
+      'Preheat oven to 400\u00b0F (200\u00b0C).',
+      'Place salmon and asparagus on a lined baking sheet.',
+      'Drizzle with olive oil, sprinkle garlic, salt, and pepper.',
+      'Add lemon slices on top of salmon.',
+      'Bake for 15-18 minutes until salmon flakes easily.',
+      'Garnish with fresh dill and serve.'
+    ]
+  },
+  {
+    id: 18,
+    name: 'Shrimp & Zucchini Noodles',
+    emoji: '\u{1F364}',
+    meal: 'dinner',
+    proteinType: 'fish',
+    calories: 290,
+    protein: 30,
+    carbs: 14,
+    fat: 13,
+    prepTime: '15 min',
+    description: 'Light and fresh zucchini noodles tossed with garlic shrimp and cherry tomatoes.',
+    ingredients: [
+      '150g shrimp, peeled',
+      '2 medium zucchini, spiralized',
+      '1/2 cup cherry tomatoes, halved',
+      '2 cloves garlic, minced',
+      '1 tbsp olive oil',
+      'Red pepper flakes',
+      'Fresh basil',
+      'Lemon juice'
+    ],
+    instructions: [
+      'Heat olive oil in a pan over medium-high heat.',
+      'Cook shrimp with garlic 2-3 min per side.',
+      'Add zucchini noodles and tomatoes. Toss 2 min.',
+      'Season with salt, pepper, and red pepper flakes.',
+      'Squeeze lemon over top and garnish with basil.'
     ]
   }
 ];
@@ -759,6 +835,7 @@ function renderMealPlan() {
 }
 
 let selectingSlot = null;
+let activeProteinFilter = 'all';
 
 function highlightSidebarForMeal(meal) {
   const items = document.querySelectorAll('.mealplan-recipe-item');
@@ -770,7 +847,9 @@ function highlightSidebarForMeal(meal) {
 function renderMealPlanSidebar(filter) {
   const list = document.getElementById('mealplanRecipeList');
   const q = (filter || '').toLowerCase();
-  const filtered = q ? RECIPES.filter(r => r.name.toLowerCase().includes(q)) : RECIPES;
+  let filtered = RECIPES;
+  if (q) filtered = filtered.filter(r => r.name.toLowerCase().includes(q));
+  if (activeProteinFilter !== 'all') filtered = filtered.filter(r => r.proteinType === activeProteinFilter);
 
   list.innerHTML = filtered.map(r => `
     <div class="mealplan-recipe-item" data-recipe-id="${r.id}">
@@ -799,6 +878,17 @@ function renderMealPlanSidebar(filter) {
 function setupMealPlanSearch() {
   document.getElementById('mealplanSearch').addEventListener('input', (e) => {
     renderMealPlanSidebar(e.target.value);
+  });
+}
+
+function setupProteinFilters() {
+  document.querySelectorAll('.protein-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.protein-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeProteinFilter = btn.dataset.protein;
+      renderMealPlanSidebar(document.getElementById('mealplanSearch').value);
+    });
   });
 }
 
@@ -919,6 +1009,7 @@ function init() {
   setupRecipeFilters();
   setupRecipeModal();
   setupMealPlanSearch();
+  setupProteinFilters();
   setupLogNavigation();
   updateCalorieRing();
   renderTodayLog();

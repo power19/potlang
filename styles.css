@@ -753,6 +753,33 @@ h2 {
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
 }
 
+.protein-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.protein-filter-btn {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--gray-300);
+  background: white;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.protein-filter-btn:hover {
+  background: var(--gray-100);
+}
+
+.protein-filter-btn.active {
+  background: var(--green-600);
+  color: white;
+  border-color: var(--green-600);
+}
+
 .mealplan-recipe-list {
   display: flex;
   flex-direction: column;
