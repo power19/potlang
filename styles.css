@@ -753,13 +753,28 @@ h2 {
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
 }
 
+.sidebar-filter-group {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-filter-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.3rem;
+}
+
+.meal-filters,
 .protein-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
-  margin-bottom: 0.75rem;
 }
 
+.meal-filter-btn,
 .protein-filter-btn {
   padding: 0.25rem 0.6rem;
   border: 1px solid var(--gray-300);
@@ -770,8 +785,15 @@ h2 {
   transition: var(--transition);
 }
 
+.meal-filter-btn:hover,
 .protein-filter-btn:hover {
   background: var(--gray-100);
+}
+
+.meal-filter-btn.active {
+  background: var(--green-600);
+  color: white;
+  border-color: var(--green-600);
 }
 
 .protein-filter-btn.active {

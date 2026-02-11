@@ -836,6 +836,7 @@ function renderMealPlan() {
 
 let selectingSlot = null;
 let activeProteinFilter = 'all';
+let activeMealFilter = 'all';
 
 function highlightSidebarForMeal(meal) {
   const items = document.querySelectorAll('.mealplan-recipe-item');
@@ -849,6 +850,7 @@ function renderMealPlanSidebar(filter) {
   const q = (filter || '').toLowerCase();
   let filtered = RECIPES;
   if (q) filtered = filtered.filter(r => r.name.toLowerCase().includes(q));
+  if (activeMealFilter !== 'all') filtered = filtered.filter(r => r.meal === activeMealFilter);
   if (activeProteinFilter !== 'all') filtered = filtered.filter(r => r.proteinType === activeProteinFilter);
 
   list.innerHTML = filtered.map(r => `
@@ -887,6 +889,17 @@ function setupProteinFilters() {
       document.querySelectorAll('.protein-filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeProteinFilter = btn.dataset.protein;
+      renderMealPlanSidebar(document.getElementById('mealplanSearch').value);
+    });
+  });
+}
+
+function setupMealFilters() {
+  document.querySelectorAll('.meal-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.meal-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMealFilter = btn.dataset.meal;
       renderMealPlanSidebar(document.getElementById('mealplanSearch').value);
     });
   });
@@ -1009,6 +1022,7 @@ function init() {
   setupRecipeFilters();
   setupRecipeModal();
   setupMealPlanSearch();
+  setupMealFilters();
   setupProteinFilters();
   setupLogNavigation();
   updateCalorieRing();
