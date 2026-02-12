@@ -528,6 +528,9 @@ let state = {
   todayLog: [],
   logHistory: {},
   mealPlan: {},
+  users: [],
+  userMealPlans: {},
+  currentUserId: null,
   currentLogDate: getTodayKey()
 };
 
@@ -558,6 +561,22 @@ function loadState() {
       state.todayLog = [];
     }
     state.currentLogDate = today;
+    // Ensure users array exists
+    if (!state.users) state.users = [];
+    if (!state.userMealPlans) state.userMealPlans = {};
+    // Migrate old single mealPlan to first user if users empty and mealPlan has data
+    if (state.users.length === 0 && state.mealPlan && Object.keys(state.mealPlan).length > 0) {
+      const firstUser = { id: generateId(), name: 'Me' };
+      state.users.push(firstUser);
+      state.userMealPlans[firstUser.id] = state.mealPlan;
+      state.currentUserId = firstUser.id;
+      state.mealPlan = {};
+      saveState();
+    }
+    // Set currentUserId if not set
+    if (!state.currentUserId && state.users.length > 0) {
+      state.currentUserId = state.users[0].id;
+    }
   }
 }
 
@@ -778,11 +797,152 @@ function setupRecipeModal() {
   });
 }
 
+// === USER MANAGEMENT ===
+function getCurrentUserPlan() {
+  if (!state.currentUserId) return {};
+  if (!state.userMealPlans[state.currentUserId]) state.userMealPlans[state.currentUserId] = {};
+  return state.userMealPlans[state.currentUserId];
+}
+
+function renderUserTabs() {
+  const container = document.getElementById('userTabs');
+  const isMaster = state.currentUserId === 'master';
+
+  let html = `<button class="user-tab ${isMaster ? 'active master' : ''}" data-user-id="master">Master</button>`;
+  html += state.users.map(u =>
+    `<button class="user-tab ${state.currentUserId === u.id ? 'active' : ''}" data-user-id="${u.id}">
+      ${escapeHtml(u.name)}
+      <span class="user-tab-remove" data-user-id="${u.id}" title="Remove">&times;</span>
+    </button>`
+  ).join('');
+
+  container.innerHTML = html;
+
+  // Tab click
+  container.querySelectorAll('.user-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      if (e.target.classList.contains('user-tab-remove')) return;
+      state.currentUserId = tab.dataset.userId;
+      saveState();
+      renderUserTabs();
+      switchMealPlanView();
+    });
+  });
+
+  // Remove user
+  container.querySelectorAll('.user-tab-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const userId = btn.dataset.userId;
+      const user = state.users.find(u => u.id === userId);
+      if (user && confirm('Remove ' + user.name + ' and their meal plan?')) {
+        state.users = state.users.filter(u => u.id !== userId);
+        delete state.userMealPlans[userId];
+        if (state.currentUserId === userId) {
+          state.currentUserId = state.users.length > 0 ? state.users[0].id : 'master';
+        }
+        saveState();
+        renderUserTabs();
+        switchMealPlanView();
+      }
+    });
+  });
+}
+
+function setupAddUser() {
+  document.getElementById('addUserBtn').addEventListener('click', () => {
+    const name = prompt('Enter person\'s name:');
+    if (name && name.trim()) {
+      const user = { id: generateId(), name: name.trim() };
+      state.users.push(user);
+      state.userMealPlans[user.id] = {};
+      state.currentUserId = user.id;
+      saveState();
+      renderUserTabs();
+      switchMealPlanView();
+    }
+  });
+}
+
+function switchMealPlanView() {
+  const userView = document.getElementById('userMealPlanView');
+  const masterViewEl = document.getElementById('masterView');
+
+  if (state.currentUserId === 'master') {
+    userView.style.display = 'none';
+    masterViewEl.style.display = 'block';
+    renderMasterView();
+  } else {
+    userView.style.display = 'block';
+    masterViewEl.style.display = 'none';
+    renderMealPlan();
+    renderMealPlanSidebar();
+  }
+}
+
+// === MASTER VIEW ===
+function renderMasterView() {
+  const container = document.getElementById('masterContent');
+  if (state.users.length === 0) {
+    container.innerHTML = '<p class="empty-state">No people added yet. Add someone to start planning meals.</p>';
+    return;
+  }
+
+  let html = '';
+  DAYS.forEach(day => {
+    let dayHtml = `<div class="master-day">
+      <div class="master-day-header">${day}</div>
+      <div class="master-day-body">`;
+
+    // Collect all recipes needed for this day across all users
+    const recipeCounts = {};
+    let dayUsers = '';
+
+    state.users.forEach(user => {
+      const plan = state.userMealPlans[user.id] || {};
+      const dayMeals = plan[day] || {};
+      const meals = MEAL_TYPES.map(mt => {
+        const recipe = dayMeals[mt] ? RECIPES.find(r => r.id === dayMeals[mt]) : null;
+        if (recipe) {
+          const key = recipe.id;
+          if (!recipeCounts[key]) recipeCounts[key] = { recipe, count: 0, people: [] };
+          recipeCounts[key].count++;
+          recipeCounts[key].people.push(user.name);
+        }
+        return recipe ? `<span class="master-meal">${recipe.emoji} ${escapeHtml(recipe.name)}</span>` : `<span class="master-meal empty">--</span>`;
+      }).join('');
+
+      dayUsers += `<div class="master-user-row">
+        <span class="master-user-name">${escapeHtml(user.name)}</span>
+        <div class="master-user-meals">${meals}</div>
+      </div>`;
+    });
+
+    dayHtml += dayUsers;
+
+    // Prep summary: what to cook and how many servings
+    const prepItems = Object.values(recipeCounts);
+    if (prepItems.length > 0) {
+      dayHtml += `<div class="master-prep-list">
+        <strong>Prep list:</strong>
+        ${prepItems.map(p => `<span class="master-prep-item">${p.recipe.emoji} ${escapeHtml(p.recipe.name)} x${p.count} <small>(${p.people.join(', ')})</small></span>`).join('')}
+      </div>`;
+    }
+
+    dayHtml += '</div></div>';
+    html += dayHtml;
+  });
+
+  container.innerHTML = html;
+}
+
 // === MEAL PLAN ===
 function renderMealPlan() {
   const grid = document.getElementById('mealplanGrid');
+  const userPlan = getCurrentUserPlan();
+
   grid.innerHTML = DAYS.map(day => {
-    const dayMeals = state.mealPlan[day] || {};
+    const dayMeals = userPlan[day] || {};
     const dayCal = MEAL_TYPES.reduce((sum, mt) => {
       const r = dayMeals[mt] ? RECIPES.find(rec => rec.id === dayMeals[mt]) : null;
       return sum + (r ? r.calories : 0);
@@ -823,8 +983,9 @@ function renderMealPlan() {
       e.stopPropagation();
       const day = btn.dataset.day;
       const meal = btn.dataset.meal;
-      if (!state.mealPlan[day]) return;
-      delete state.mealPlan[day][meal];
+      const userPlan = getCurrentUserPlan();
+      if (!userPlan[day]) return;
+      delete userPlan[day][meal];
       saveState();
       renderMealPlan();
       renderWeeklySummary();
@@ -868,8 +1029,9 @@ function renderMealPlanSidebar(filter) {
       }
       const recipeId = parseInt(item.dataset.recipeId);
       const { day, meal } = selectingSlot;
-      if (!state.mealPlan[day]) state.mealPlan[day] = {};
-      state.mealPlan[day][meal] = recipeId;
+      const userPlan = getCurrentUserPlan();
+      if (!userPlan[day]) userPlan[day] = {};
+      userPlan[day][meal] = recipeId;
       selectingSlot = null;
       saveState();
       renderMealPlan();
@@ -907,8 +1069,9 @@ function setupMealFilters() {
 
 function renderWeeklySummary() {
   const container = document.getElementById('weeklySummary');
+  const userPlan = getCurrentUserPlan();
   container.innerHTML = DAYS.map(day => {
-    const dayMeals = state.mealPlan[day] || {};
+    const dayMeals = userPlan[day] || {};
     const total = MEAL_TYPES.reduce((sum, mt) => {
       const r = dayMeals[mt] ? RECIPES.find(rec => rec.id === dayMeals[mt]) : null;
       return sum + (r ? r.calories : 0);
@@ -1003,8 +1166,8 @@ function setupTabs() {
       if (tab) tab.classList.add('active');
 
       if (btn.dataset.tab === 'mealplan') {
-        renderMealPlan();
-        renderMealPlanSidebar();
+        renderUserTabs();
+        switchMealPlanView();
       }
       if (btn.dataset.tab === 'log') {
         state.currentLogDate = getTodayKey();
@@ -1024,6 +1187,7 @@ function init() {
   setupMealPlanSearch();
   setupMealFilters();
   setupProteinFilters();
+  setupAddUser();
   setupLogNavigation();
   updateCalorieRing();
   renderTodayLog();
